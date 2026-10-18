@@ -19,7 +19,9 @@
 输出：屏幕上打印四张表，并逐项与书里的数字比对，最后一行给出 PASS / FAIL。
 
     python rescore.py
+    python rescore.py --balanced   # 只算四臂都跑齐的格（口径检查，见说明书第四节）
 """
+import argparse
 import json
 import os
 import sys
@@ -74,9 +76,43 @@ def pct(a, b):
     return (100.0 * a / b) if b else float("nan")
 
 
+def balanced(rows, n_lines):
+    """只在「四臂都跑齐」的 (model, task) 格上重算——口径检查用。
+
+    主表里各臂的分母并不完全一样（有的格某个臂根本没有产出记录）。这一段把
+    这些格整体剔掉，让四臂落在同一批断言上，看结论会不会动。
+    """
+    have = {(r["model"], r["task"], r["arm"]) for r in rows}
+    pairs = {(r["model"], r["task"]) for r in rows}
+    keep = {p for p in pairs if all((p[0], p[1], a) in have for a in ORDER)}
+    dropped = sorted({p[1] for p in pairs - keep})
+
+    print("=" * 78)
+    print("口径检查：只在四臂齐全的格上重算（%d 条记录，保留 %d / %d 组 model×task）"
+          % (n_lines, len(keep), len(pairs)))
+    print("被剔掉的题：%s" % (", ".join(dropped) if dropped else "无"))
+    print("=" * 78)
+    for a in ORDER:
+        hp = ht = 0
+        for r in rows:
+            if r["arm"] != a or (r["model"], r["task"]) not in keep:
+                continue
+            ht += len(POOL[r["task"]]["hidden"])
+            if r.get("ok"):
+                hp += r.get("hidden_pass", 0)
+        print("  %s  通过率 %6.1f%%   （%d 条断言）"
+              % (a, pct(hp, ht), ht))
+    print("\n  对照：表 74 用的是全部记录，A 56.5 / D 97.4 / C 94.4 / B 95.9，")
+    print("        分母 A 262、其余 267。上面的数分母相同，只剔掉了个别空格。")
+    print("=" * 78)
+
+
 def main():
     rows, n_lines = load()
     models = sorted({r["model"] for r in rows})
+
+    if ARGS.balanced:
+        return balanced(rows, n_lines)
 
     # 断言级通过率（TT），按臂汇总
     def score(sel_ids, arm):
@@ -120,7 +156,7 @@ def main():
     fails = []
 
     def check(label, got, want):
-        ok = abs(round(got, 1) - want) < 0.05 if want >= 0 else abs(round(got, 1) - want) < 0.05
+        ok = abs(round(got, 1) - want) < 0.05
         print("  %-34s 重算 %7.1f    书里 %7.1f    %s"
               % (label, got, want, "✓" if ok else "✗"))
         if not ok:
@@ -179,4 +215,8 @@ def main():
 
 
 if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description="从原始记录重算附录 Q 的表 74–77")
+    ap.add_argument("--balanced", action="store_true",
+                    help="只在四臂都跑齐的格上重算（口径检查，不与书里逐格比对）")
+    ARGS = ap.parse_args()
     main()
