@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 本地跑出来的东西（不要提交：原始记录在 results/，别被本地试跑污染）
+_merged*.jsonl
+my_run.txt
+o.txt
+new_run.jsonl
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

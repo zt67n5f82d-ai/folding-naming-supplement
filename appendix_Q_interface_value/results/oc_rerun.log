@@ -1,0 +1,10 @@
+re-running 9 cells
+  opencode/nemotron-3.5-lightning-free       h_evaluate       C  ok=True h=10/10 504.4s
+  opencode/nemotron-3.5-lightning-free       h_schedule       C  ok=False h=None/None 900.4s
+  opencode/nemotron-3.5-lightning-free       h_compose        A  ok=True h=0/5 90.4s
+  opencode/nemotron-3.5-lightning-free       h_compose        C  ok=True h=5/5 59.0s
+  opencode/nemotron-3.5-lightning-free       h_schedule       D  ok=False h=None/None 900.2s
+  opencode/ling-3.1-flash-free               h_schedule       C  ok=False h=None/None 900.2s
+  opencode/ling-3.1-flash-free               h_schedule       D  ok=True h=5/5 566.3s
+  opencode/fledge-alpha-free                 h_schedule       D  ok=True h=5/5 219.7s
+  opencode/fledge-alpha-free                 h_schedule       B  ok=True h=5/5 244.0s

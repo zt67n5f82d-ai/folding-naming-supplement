@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "若你为了核对数字而引用本材料，请连版本号一起引；记录不会变，重跑会。"
+title: "《折叠与命名》随书材料：附录 O 与附录 Q 的脚本与原始记录"
+abstract: >-
+  简体中文版《折叠与命名》的随书材料。包含附录 O.4 接口往返缺陷实验的生成脚本与
+  原始输出（表 68），以及附录 Q 真实 LLM 实验的全部脚本、241 条逐次运行的原始记录、
+  运行日志与三份实验结论（表 73–77）。书里表 74–77 的全部数字可由本材料的原始记录
+  离线重算，逐格一致。
+type: software
+authors:
+  - family-names: Zhai
+    given-names: Zhiguang
+    name-particle: ""
+    orcid: "https://orcid.org/0009-0006-9497-0084"
+version: 1.0.0
+date-released: "2026-10-18"
+license: MIT
+keywords:
+  - folding
+  - naming
+  - interface
+  - invariant
+  - round-trip defect
+  - LLM experiment
+  - reproducibility
+repository-code: "https://github.com/<your-account>/folding-naming-supplement"
+references:
+  - type: book
+    title: "折叠与命名"
+    authors:
+      - family-names: Zhai
+        given-names: Zhiguang
+        orcid: "https://orcid.org/0009-0006-9497-0084"
+    year: 2026
+    notes: "简体中文印刷版；本材料对应其附录 O 与附录 Q。"

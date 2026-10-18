@@ -1,0 +1,10 @@
+# 统一 LF：本仓库的比对命令（diff / git diff）在 Windows 上也应给出干净结果
+* text=auto eol=lf
+
+# 记录与脚本都按文本处理
+*.py    text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.jsonl text eol=lf
+*.log   text eol=lf
+*.cff   text eol=lf
