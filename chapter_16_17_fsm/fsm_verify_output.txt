@@ -1,0 +1,38 @@
+==============================================================================
+第 16–17 章 FSM 验证　（随机种子 20261018，5000 条轨迹 × 20 步）
+==============================================================================
+管理 FSM：4 状态 × 6 事件 = 24 格
+横切 FSM：7 状态 × 6 事件 = 42 格
+
+— 管理 FSM（表 30）—
+[PASS] 01 完备性（全函数）· ManagerFSM · 24 / 24 格有定义
+[PASS] 02 目标合法 · ManagerFSM · 每个目标都是已声明状态或 REJECT
+[PASS] 03 安全性 · ManagerFSM · 无 RED → GREEN 捷径 · RED 的直接出口不含 GREEN
+[PASS] 04 安全性 · ManagerFSM · CLOSED 为吸收态 · CLOSED 行除「项目结束」自环外全部 REJECT
+[PASS] 05 活跃性 · ManagerFSM · GREEN → CLOSED 可达 · GREEN → CLOSED
+[PASS] 06 活跃性 · ManagerFSM · 四个状态均可达 CLOSED · 无死状态
+[PASS] 07 不变量 · ManagerFSM · 进入 RED 仅由 escalation / member_resign · 触发事件：escalation, member_resign
+[PASS] 08 不变量 · ManagerFSM · 非 CLOSED 下核心离职一律进 RED · GREEN / YELLOW / RED 三行均 → RED
+[PASS] 09 随机压力 · ManagerFSM · 5000 条 × 20 步 · 未定义转移 0 例，死状态轨迹 0 条
+
+— 横切 FSM（图 18 + 表 32）—
+[PASS] 10 完备性（全函数）· CrossCuttingFSM · 42 / 42 格有定义
+[PASS] 11 目标合法 · CrossCuttingFSM · 每个目标都是已声明状态或 REJECT
+[PASS] 12 安全性 · CrossCuttingFSM · CLOSED 后业务事件全拒绝 · 5 个业务事件在 CLOSED 上全部 REJECT
+[PASS] 13 活跃性 · CrossCuttingFSM · IDLE → CLOSED 可达 · IDLE → CLOSED
+[PASS] 14 活跃性 · CrossCuttingFSM · 七个状态均可达 CLOSED · 无死状态
+[PASS] 15 不变量 · CrossCuttingFSM · ESCALATED 仅由 escalate 到达 · 进入事件：escalate
+[PASS] 16 阶段内幂等 · 五处自环（detect/contain/escalate/recover/review） · 自环：DETECTED, CONTAINED, ESCALATED, RECOVERED, REVIEWED
+[PASS] 17 阶段外拒绝 · contain 在 IDLE / RECOVERED / REVIEWED / CLOSED 全拒绝 · 四处均 REJECT
+[PASS] 18 幂等压缩 · 11 步 → 8 步 · 折掉：CONTAINED, RECOVERED, REVIEWED
+[PASS] 19 随机压力 · CrossCuttingFSM · 5000 条 × 20 步 · 未定义转移 0 例，死状态轨迹 0 条
+
+==============================================================================
+压缩前的轨迹（11 步）：
+  IDLE → DETECTED → CONTAINED → CONTAINED → ESCALATED → CONTAINED → RECOVERED → RECOVERED → REVIEWED → REVIEWED → CLOSED
+压缩后的轨迹（8 步）：
+  IDLE → DETECTED → CONTAINED → ESCALATED → CONTAINED → RECOVERED → REVIEWED → CLOSED
+==============================================================================
+合计 19 项检查，通过 19，失败 0
+全部通过 19 / 19。
+==============================================================================
