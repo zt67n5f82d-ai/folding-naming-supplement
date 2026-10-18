@@ -24,7 +24,7 @@ keywords:
   - round-trip defect
   - LLM experiment
   - reproducibility
-repository-code: "https://github.com/<your-account>/folding-naming-supplement"
+repository-code: "https://github.com/zt67n5f82d-ai/folding-naming-supplement"
 references:
   - type: book
     title: "折叠与命名"
