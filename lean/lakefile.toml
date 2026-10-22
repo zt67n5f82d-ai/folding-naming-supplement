@@ -1,0 +1,6 @@
+name = "bounded_construction"
+version = "1.0.0"
+defaultTargets = ["BoundedConstruction"]
+
+[[lean_lib]]
+name = "BoundedConstruction"
