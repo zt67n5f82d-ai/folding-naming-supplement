@@ -22,7 +22,9 @@
 
 **第 3 项要特别说明**：那两个 FSM 的原始验证脚本没有留下来。本仓库里的是**按书里表 30、表 31、图 18、表 32、以及 17.4 那条 11 步轨迹重建**的脚本，2026-10-18 重跑，24 / 24、42 / 42、19 / 19、5000 条 × 20 步 0 例未定义转移、11 → 8 全部复现。它**不是原件，是复算**——证据强度不同，所以不合并表述。
 
-**第 5 项是 2026-10-22 新增的**，和前面四项性质不同：前面四项是「跑过，没出错」，这一项是**证明**。同一批 FSM 性质，Python 脚本给的是穷举加抽样，Lean 给的是对全部状态与事件的**全称**结论，且可以用 `#print axioms` 逐条核对有没有偷用 `sorry`。当前 30 条，零 `sorryAx`。
+**第 5 项是 2026-10-22 新增的**，和前面四项性质不同：前面四项是「跑过，没出错」，这一项是**证明**。同一批 FSM 性质，Python 脚本给的是穷举加抽样，Lean 给的是对全部状态与事件的**全称**结论，且可以用 `#print axioms` 逐条核对有没有偷用 `sorry`。当前 40 条，零 `sorryAx`。
+
+这一项里还有一组不一样的定理：**把公理当判据用**（`lean/BoundedConstruction/Certificate.lean`）。它不满足于证明「变式存在 ⇒ 终止」这个数学事实，而是真的拿公理去查程序：给一个不带任何终止性假设的执行器，证明「通过准入检查的程序，从任何初始状态出发都在 `V st` 步内停」——上界可算、不是存在性断言；再对 21.13 的三个反例证明「**这样的证书不存在**」（不是「我们没找到」）。这三件事合起来是免疫系统准入门的完整形态：**健全、有界、能拒**。
 
 **仍然没有运行记录的**：第 19 章 TCP 的 13 项属性验证、第 21 章 Agent 契约中「接口行为」那部分。它们在书里一直标着「设计目标、只有设计论证」。`lean/` 补的是**公理本身**（终止性的数学内容），不是 Agent 契约——后者要等系统真的跑起来才能验证，本仓库同样不含，不是漏了。
 
@@ -92,6 +94,7 @@ lean/                            第 21 章：有界构造公理的机器验证�
 ├── BoundedConstruction/Basic.lean          良基序与变式（公理①②、反例）
 ├── BoundedConstruction/Lexicographic.lean  字典序变式；Ackermann 终止
 ├── BoundedConstruction/While.lean          带变式的循环（无变式则写不出来）
+├── BoundedConstruction/Certificate.lean    把公理当判据用（通过必停、上界可算、反例无证书）
 ├── BoundedConstruction/FSM.lean            16–17 章两个状态机
 ├── AxiomCheck.lean                         诚实性检查：逐条打印公理依赖
 └── README.md                               对应书内位置、怎么跑、结果
@@ -129,7 +132,7 @@ Everywhere the book says "scripts and results are provided with the book", they 
 - `chapter_16_17_fsm/` — the verifier behind the FSM numbers of Chapters 16–17: 19 checks (completeness, safety, liveness, invariants), 5,000 random walks × 20 steps per FSM, and the 11 → 8 idempotent-compression trace. **Rebuilt** from the transition tables printed in the book (the original script was not kept), re-run 2026-10-18; all published numbers reproduce. It is a recomputation, not the original artifact — the README says so in as many words.
 - `appendix_O_roundtrip/` — the round-trip-defect experiment behind Table 68 (40,000 samples, fixed seed, pure standard library).
 - `appendix_Q_interface_value/` — the full four-arm LLM experiment behind Tables 73–77: 12 scripts, 241 raw run records (JSONL), run logs, and three written findings.
-- `lean/` — a Lean 4 formalization (no mathlib) of the Bounded Construction Axiom of Chapter 21: well-founded variants, the lexicographic variant behind the Ackermann ruling, a `while` language in which a loop without a decreasing variant **cannot be written at all**, and the two finite state machines of Chapters 16–17. Then the same properties the Python verifier checks by enumeration and sampling, proved for all states and events. `lake build` (≈40 s), then `lean AxiomCheck.lean` prints each theorem's axiom dependencies — currently 30 items, zero `sorryAx`.
+- `lean/` — a Lean 4 formalization (no mathlib) of the Bounded Construction Axiom of Chapter 21: well-founded variants, the lexicographic variant behind the Ackermann ruling, a `while` language in which a loop without a decreasing variant **cannot be written at all**, an admission checker that turns the axiom into a decision procedure (a program that passes runs for at most `V st` steps — a computable bound; the three counterexamples of 21.13 get proofs that **no certificate exists**), and the two finite state machines of Chapters 16–17. Then the same properties the Python verifier checks by enumeration and sampling, proved for all states and events. `lake build` (≈40 s), then `lean AxiomCheck.lean` prints each theorem's axiom dependencies — currently 40 items, zero `sorryAx`.
 
 Verify offline in four commands (see §2): both fixed-seed runs reproduce their stored output byte for byte; the grader's self-test prints `ALL PASS`; `rescore.py` recomputes Tables 74–77 from the 241 raw records and matches every cell, including the correlation coefficient −0.949.
 

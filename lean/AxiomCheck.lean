@@ -37,6 +37,17 @@ open FoldingNaming
 #print axioms runWhile
 #print axioms countdown
 
+/-! ## Certificate：把公理当判据用 -/
+#print axioms fuel_enough
+#print axioms Loop.stops
+#print axioms admission_sound
+#print axioms countdownLoop
+#print axioms countdown_stops_in_17
+#print axioms countdown_needs_more_than_4
+#print axioms no_variant_identity
+#print axioms no_variant_int_descent
+#print axioms no_variant_growing_queue
+
 /-! ## FSM：管理 FSM -/
 #print axioms m_no_red_green
 #print axioms m_closed_absorb
