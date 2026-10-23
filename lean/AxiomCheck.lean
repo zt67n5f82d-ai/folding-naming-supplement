@@ -69,5 +69,19 @@ open FoldingNaming
 #print axioms x_idle_reaches
 #print axioms x_all_reach_closed
 
+/-! ## TCP：第 19 章的复算 -/
+#print axioms v1_rst_undefined
+#print axioms v1_eq_some_v2
+#print axioms strong_simulation_fails
+#print axioms stuttering_simulation
+#print axioms no_data_before_established
+#print axioms app_data_only_in_established
+#print axioms established_entry
+#print axioms time_wait_absorbs
+#print axioms time_wait_exit
+#print axioms handshake_reaches_established
+#print axioms close_reaches_closed
+#print axioms close_path_visits_time_wait
+
 /-! ## 压 缩 -/
 #print axioms compress_trail
