@@ -6,7 +6,7 @@
 
 - 书：**《折叠与命名》**（简体中文印刷版，2026）
 - 作者：翟志广（Zhai Zhiguang）· [ORCID 0009-0006-9497-0084](https://orcid.org/0009-0006-9497-0084)
-- 本仓库版本：`v1.1.0`（2026-10-18）
+- 本仓库版本：`v1.2.0`（2026-10-23）
 
 ---
 
@@ -62,7 +62,7 @@ python appendix_Q_interface_value/code/rescore.py
 cd lean && lake build && lean AxiomCheck.lean
 ```
 
-期望输出四行：
+前四项期望输出四行：
 
 ```
 （两次 diff 都无输出 —— 说明书里那些数与本次运行逐字一致）
@@ -74,7 +74,7 @@ oracle self-test: ALL PASS
 要么是 `does not depend on any axioms`，要么是 `depends on axioms: [propext, Quot.sound]`。
 **只要出现 `sorryAx`，那条定理就是假的**。
 
-四处都过，等于把书里三组数字（FSM 的四个数量、表 68 的三个数、表 74–77 的四张表）从原材料重新算了一遍。任何一处不过，请当作真问题报给作者，不要当成排版误差。
+五项都过，等于把书里三组数字（FSM 的四个数量、表 68 的三个数、表 74–77 的四张表）从原材料重新算了一遍，外加把第 21 章那条公理在机器上重证了一遍。任何一处不过，请当作真问题报给作者，不要当成排版误差。
 
 `fsm_verify.py` 与 `invariant_math.py` 都是**确定性**的：种子写死，跑两遍输出逐字节相同，所以 `diff` 能当验证手段——存档的那份输出可以被任何人重新生成并比对。
 
