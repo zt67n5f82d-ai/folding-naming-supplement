@@ -83,5 +83,11 @@ open FoldingNaming
 #print axioms close_reaches_closed
 #print axioms close_path_visits_time_wait
 
+/-! ## Gate：闸门（进出口） -/
+#print axioms screen_rejects_sound
+#print axioms certify_sound
+#print axioms certified_implies_screened
+#print axioms claimStuck_has_no_evidence
+
 /-! ## 压 缩 -/
 #print axioms compress_trail

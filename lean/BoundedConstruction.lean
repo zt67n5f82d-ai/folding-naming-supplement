@@ -16,3 +16,4 @@ import BoundedConstruction.While
 import BoundedConstruction.Certificate
 import BoundedConstruction.FSM
 import BoundedConstruction.TCP
+import BoundedConstruction.Gate

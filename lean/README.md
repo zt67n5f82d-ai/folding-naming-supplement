@@ -19,9 +19,9 @@ lean AxiomCheck.lean  # 打印每条定理的公理依赖（需先 build）
 ```
 
 `AxiomCheck.lean` 是诚实性检查：若任何定理依赖 `sorryAx`，说明那个证明是假的。
-当前结果：**54 条定理，零 `sorryAx`**。10 条完全不依赖任何公理，其余只依赖 `propext` 与 `Quot.sound`（Lean 的标准公理，任何数学证明都可以用）。
+当前结果：**58 条定理，零 `sorryAx`**。10 条完全不依赖任何公理，其余只依赖 `propext` 与 `Quot.sound`（Lean 的标准公理，任何数学证明都可以用）。
 
-## 六个部分
+## 七个部分
 
 | 文件 | 对应书内 | 内容 |
 |---|---|---|
@@ -31,6 +31,7 @@ lean AxiomCheck.lean  # 打印每条定理的公理依赖（需先 build）
 | `Certificate.lean` | 21.12 / 21.14 / 21.16 | 把公理当判据用：通过必停、上界可算、反例无证书 |
 | `FSM.lean` | 16–17 章 | 两个状态机的完备性/安全性/活跃性/不变量 |
 | `TCP.lean` | 19 章 | TCP 的复算：完备性、四条属性、强模拟与弱模拟 |
+| `Gate.lean` | 21.12 / 21.14 / 21.16 | **闸门**：一个最小的进出口（入口 / 证书 / 出口 / 两条可靠性定理） |
 
 ### Basic：公理的数学内容
 
@@ -182,13 +183,50 @@ theorem x_to_closed (s : XState) (e : XEvent)
 
 **一处刻意的取舍**：RFC 793 允许 `TIME_WAIT` 收到 RST 提前关闭，那会破坏 19.5 那条「必须等 2MSL」。这里让 RST 被吸收（RFC 1337 的做法），因为两条不能同时成立，必须选一条。取舍写在定理的文档注释里，不藏在代码里。
 
+
+### Gate：闸门 —— 一个最小的进出口
+
+前面六个部分各自证了一件事，但读者拿不到一个「往里放东西、拿结果出来」的口子。`Gate.lean` 立这个口子，只有四样东西：
+
+| 角色 | 定义 | 说明 |
+|---|---|---|
+| 入口 | `Claim` | 条件、循环体、变式。**不带证明**，谁都能构造，包括构造错的 |
+| 证据 | `Evidence c` | 递减证明。整个接口唯一需要人手交的东西 |
+| 出口 | `Verdict` | `accepted (bound : Nat)` ／ `rejected (why : String)` |
+
+判定切成**两道工序**，因为 21.14 那两句话在接口上本来就是两件事：
+
+```lean
+def screen  (c : Claim) (st : Nat) : Verdict              -- 可判、便宜、不要证据；能拒
+def certify (c : Claim) (st : Nat) (e : Evidence c) : Verdict  -- 要证据、走内核；能收
+```
+
+| 定理 | 说的是什么 |
+|---|---|
+| `screen_rejects_sound` | **拒得对**：被筛掉的申请，根本交不出证书——「不可能」不是态度，是它的处境 |
+| `certify_sound` | **收得稳**：验过的，真的在 `bound` 步内停 |
+| `certified_implies_screened` | 两道工序不重复：能拿到证书的，结构筛必然放行 |
+
+`certify` 看上去什么都没做（直接接受）——这不是偷懒：**能拿到 `Evidence c` 这一件事本身就已经走完内核检查**。拿不到的人根本构造不出这个参数，编译器在调用处就把他拦下来了。这就是「准入门」在语言层的形状：不是运行期判你，是类型不让你进门。
+
+四个能跑的例子（`lake build` 日志里可见）：
+
+```
+#eval screen claimCountdown 17                -- accepted 17
+#eval screen claimCountdown 0                 -- accepted 0（条件本就假）
+#eval screen claimStuck 0                     -- rejected「变式在入口处已是 0…」
+#eval certify claimCountdown 17 evCountdown   -- accepted 17
+```
+
+**怎么往里长**：加第二类对象（比如第 19 章的 FSM 属性）只改三处——`Claim` 加构造子、`screen` 加分支、`certify` 与两条可靠性定理各加 case。漏一个，编译器直接拒绝编译。这就是切口该有的形状：不是我提醒你别漏，是类型不让你漏。
+
 ## 两套方法的关系
 
 |  | Python 脚本 | Lean |
 |---|---|---|
 | 性质 | 同一批（表 37 四类） | 同一批 |
 | 覆盖 | 穷举 + 5000×20 随机抽样 | 全称，无抽样 |
-| 结果 | 19/19 通过 | 54 条全部通过，零 `sorry` |
+| 结果 | 19/19 通过 | 58 条全部通过，零 `sorry` |
 | 可核 | 输出可 diff | 编译器逐条核，`#print axioms` 可查 |
 
 两者不互相替代：脚本给的是「跑过，没出错」，Lean 给的是「对所有情况成立」。
@@ -199,5 +237,5 @@ theorem x_to_closed (s : XState) (e : XEvent)
 
 - Lean `4.34.1`，x86_64-w64-windows-gnu
 - 无 mathlib、无第三方依赖
-- `lake build` 9 jobs，从零约 70 秒（含编译 6 个模块）
-- `#eval` 的输出在 build 日志里可见（9 / 61 / 253 / 0 / 0 / 0 / some 0 / none / some 0）
+- `lake build` 10 jobs，从零约 85 秒（含编译 7 个模块）
+- `#eval` 的输出在 build 日志里可见（9 / 61 / 253 / 0 / 0 / 0 / some 0 / none / some 0 / 11 / 3 / 3.666667 / accepted 17 / accepted 0 / rejected …）
